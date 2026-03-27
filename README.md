@@ -33,9 +33,61 @@ Claude Code
 
 ---
 
+## Agents Included
+
+Beyond skills, this repo ships **Claude Code subagents** — ready-to-use AI agents specialized in security tasks. Each agent knows exactly what to scan, how to report findings, and which severity levels to assign.
+
+| Agent | What it does |
+|-------|-------------|
+| [`code-security`](./agents/code-security.md) | Scans source code for SQL Injection, XSS, Command Injection, Path Traversal, insecure deserialization, hardcoded secrets, and more |
+| [`config-security`](./agents/config-security.md) | Detects hardcoded credentials, exposed cloud keys, DEBUG=True, weak secret keys, and .env files committed to the repo |
+| [`deps-security`](./agents/deps-security.md) | Audits requirements.txt, package.json, go.mod, etc. for packages with known CVEs |
+| [`api-security`](./agents/api-security.md) | Reviews API routes for missing auth, IDOR, CORS misconfiguration, missing rate limiting, and exposed sensitive data |
+
+---
+
 ## Installation
 
-### Install all security skills at once
+### Prerequisites
+
+- [Claude Code](https://claude.ai/code) installed and authenticated
+- [Node.js 18+](https://nodejs.org) — needed to install the skill reference files
+
+> The agents work standalone, but they get their full methodology from **skill reference files** (`~/.claude/skills/`). The installer sets up both automatically.
+
+### Option 1 — Install everything at once (recommended)
+
+Clone the repo and run the installer. It copies the agents to `~/.claude/agents/` **and** installs the skill reference files via `npx skills`.
+
+**macOS / Linux:**
+```bash
+git clone https://github.com/PabloOchoa-maker/claude-security-skills.git
+cd claude-security-skills
+chmod +x install.sh
+./install.sh
+```
+
+**Windows:**
+```
+git clone https://github.com/PabloOchoa-maker/claude-security-skills.git
+cd claude-security-skills
+install.bat
+```
+
+Restart Claude Code after installing. The agents will be available immediately.
+
+### Option 2 — Manual installation
+
+**Step 1 — Copy agents** to your Claude Code agents folder:
+
+| OS | Path |
+|----|------|
+| macOS / Linux | `~/.claude/agents/` |
+| Windows | `%USERPROFILE%\.claude\agents\` |
+
+Copy all `.md` files from the `agents/` folder in this repo to that location.
+
+**Step 2 — Install skill reference files:**
 
 ```bash
 npx skills add PabloOchoa-maker/claude-security-skills@code-security -g
@@ -43,20 +95,7 @@ npx skills add PabloOchoa-maker/claude-security-skills@secrets-management -g
 npx skills add PabloOchoa-maker/claude-security-skills@dependency-management-deps-audit -g
 ```
 
-### Install individually
-
-```bash
-# Only code vulnerability scanning
-npx skills add PabloOchoa-maker/claude-security-skills@code-security -g
-
-# Only secrets & CI/CD security
-npx skills add PabloOchoa-maker/claude-security-skills@secrets-management -g
-
-# Only dependency auditing
-npx skills add PabloOchoa-maker/claude-security-skills@dependency-management-deps-audit -g
-```
-
-> **Note:** The `-g` flag installs globally, making the skill available across all your projects.
+> The `-g` flag installs globally, making the skills available across all your projects.
 
 ---
 
@@ -104,32 +143,32 @@ npx skills find [your-stack]
 
 ---
 
-## Prerequisites
-
-- [Claude Code](https://claude.ai/code) installed and authenticated
-- Node.js 18+ (for `npx skills`)
-
----
-
 ## Structure
 
 ```
 claude-security-skills/
-├── code-security/
-│   ├── SKILL.md                   # Agent instructions
-│   ├── AGENTS.md                  # Full security reference (Semgrep)
+├── agents/                            # Claude Code subagent definitions
+│   ├── code-security.md
+│   ├── config-security.md
+│   ├── deps-security.md
+│   └── api-security.md
+├── code-security/                     # Skill reference files
+│   ├── SKILL.md
+│   ├── AGENTS.md
 │   ├── README.md
-│   └── rules/                     # 28 vulnerability rule files
+│   └── rules/                         # 28 vulnerability rule files
 │       ├── sql-injection.md
 │       ├── xss.md
 │       ├── command-injection.md
 │       └── ...
 ├── secrets-management/
-│   └── SKILL.md                   # Vault, AWS Secrets Manager, GitHub Secrets
-└── dependency-management-deps-audit/
-    ├── SKILL.md
-    └── resources/
-        └── implementation-playbook.md
+│   └── SKILL.md
+├── dependency-management-deps-audit/
+│   ├── SKILL.md
+│   └── resources/
+│       └── implementation-playbook.md
+├── install.sh                         # Installer for macOS/Linux
+└── install.bat                        # Installer for Windows
 ```
 
 ---
